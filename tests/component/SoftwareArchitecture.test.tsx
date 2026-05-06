@@ -3,12 +3,15 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, fireEvent, act } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import SoftwareArchitecture from '../../src/pages/SoftwareArchitecture'
+import { ProductProvider } from '../../src/context/ProductContext'
 
 function renderPage() {
   return render(
-    <MemoryRouter>
-      <SoftwareArchitecture />
-    </MemoryRouter>
+    <ProductProvider>
+      <MemoryRouter>
+        <SoftwareArchitecture />
+      </MemoryRouter>
+    </ProductProvider>
   )
 }
 

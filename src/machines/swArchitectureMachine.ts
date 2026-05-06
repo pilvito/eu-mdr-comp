@@ -59,21 +59,19 @@ export const swArchitectureMachine = setup({
     selectItem: assign({
       activeItemId: ({ event }) => event.type === 'SELECT_ITEM' ? event.id : null,
     }),
-    addItem: assign({
-      items: ({ context, event }) => {
-        if (event.type !== 'ADD_ITEM' || !event.name.trim()) return context.items
-        const newItem: SoftwareItem = {
-          id: `item-${Date.now()}`,
-          name: event.name,
-          requirements: [],
-          architectureDetails: '',
-        }
-        return [...context.items, newItem]
-      },
-      activeItemId: ({ context, event }) => {
-        if (event.type !== 'ADD_ITEM' || !event.name.trim()) return context.activeItemId
-        return `item-${Date.now()}`
-      },
+    addItem: assign(({ context, event }) => {
+      if (event.type !== 'ADD_ITEM' || !event.name.trim()) return {}
+      const newId = `item-${Date.now()}`
+      const newItem: SoftwareItem = {
+        id: newId,
+        name: event.name,
+        requirements: [],
+        architectureDetails: '',
+      }
+      return {
+        items: [...context.items, newItem],
+        activeItemId: newId,
+      }
     }),
     switchTab: assign({
       activeTab: ({ event }) => event.type === 'SWITCH_TAB' ? event.tab : 'requirements',

@@ -1,35 +1,66 @@
 import React, { useState } from 'react';
 import { ArrowLeft, ArrowRight, ShieldAlert, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useProductContext } from '../context/ProductContext';
+import type { Product } from '../context/ProductContext';
+import StepPrerequisiteWarning from '../components/StepPrerequisiteWarning';
+
+type Duration = 'transient' | 'short-term' | 'long-term' | '';
+
+interface ClassificationResult {
+  class: Product['classification'];
+  desc: string;
+  color: string;
+}
+
+function calculateClass(
+  invasive: boolean | null,
+  active: boolean | null,
+  duration: Duration
+): ClassificationResult | null {
+  if (invasive === null || active === null || !duration) return null;
+
+  if (invasive && duration === 'long-term')
+    return { class: 'Class III', desc: 'Highest risk. Requires Notified Body audit for QMS and clinical data.', color: 'var(--danger)' };
+  if (active && duration === 'short-term')
+    return { class: 'Class IIb', desc: 'Medium-high risk. Requires Notified Body involvement.', color: 'var(--warning)' };
+  if (!invasive && !active)
+    return { class: 'Class I', desc: 'Low risk. Self-certification possible (unless measuring/sterile/reusable).', color: 'var(--success)' };
+
+  return { class: 'Class IIa', desc: 'Medium risk. Requires Notified Body assessment.', color: 'var(--info)' };
+}
 
 export default function Step2() {
   const navigate = useNavigate();
-  const [invasive, setInvasive] = useState(null);
-  const [active, setActive] = useState(null);
-  const [duration, setDuration] = useState('');
+  const { activeProductId, activeProduct, updateProductClassification, updateStepProgress } = useProductContext();
 
-  const calculateClass = () => {
-    if (invasive === null || active === null || !duration) return null;
-    
-    // Simplified logic for MVP demonstration purposes
-    if (invasive && duration === 'long-term') return { class: 'Class III', desc: 'Highest risk. Requires Notified Body audit for QMS and clinical data.', color: 'var(--danger)' };
-    if (active && duration === 'short-term') return { class: 'Class IIb', desc: 'Medium-high risk. Requires Notified Body involvement.', color: 'var(--warning)' };
-    if (!invasive && !active) return { class: 'Class I', desc: 'Low risk. Self-certification possible (unless measuring/sterile/reusable).', color: 'var(--success)' };
-    
-    return { class: 'Class IIa', desc: 'Medium risk. Requires Notified Body assessment.', color: 'var(--info)' };
+  // Pre-populate from saved classification if returning to this step
+  const savedClass = activeProduct?.classification ?? '';
+  const [invasive, setInvasive] = useState<boolean | null>(null);
+  const [active, setActive] = useState<boolean | null>(null);
+  const [duration, setDuration] = useState<Duration>('');
+
+  const riskResult = calculateClass(invasive, active, duration);
+
+  const handleContinue = () => {
+    if (activeProductId && riskResult) {
+      updateProductClassification(activeProductId, riskResult.class);
+      updateStepProgress(activeProductId, 'step2', 'complete');
+    }
+    navigate('/step-3');
   };
-
-  const riskResult = calculateClass();
 
   return (
     <div className="animate-fade-in" style={{ paddingBottom: '4rem' }}>
-      <button 
-        className="btn btn-secondary mb-6" 
+      <button
+        className="btn btn-secondary mb-6"
         onClick={() => navigate('/step-1')}
         style={{ marginBottom: '2rem' }}
       >
         <ArrowLeft size={16} /> Back to Step 1
       </button>
+
+      <StepPrerequisiteWarning stepId="step2" />
 
       <div className="glass-panel" style={{ padding: '2rem' }}>
         <div className="flex-between" style={{ marginBottom: '2rem' }}>
@@ -39,6 +70,11 @@ export default function Step2() {
               EU MDR divides devices into 4 risk classes based on vulnerability of the human body.
               Higher class = more evidence + stricter review + mandatory third-party audit.
             </p>
+            {savedClass && (
+              <p className="text-small" style={{ marginTop: '0.5rem', color: 'var(--text-muted)' }}>
+                Previously saved classification: <strong style={{ color: 'var(--primary)' }}>{savedClass}</strong>
+              </p>
+            )}
           </div>
           <ShieldAlert size={48} color="var(--primary)" opacity={0.5} />
         </div>
@@ -49,13 +85,13 @@ export default function Step2() {
             <h3 className="heading-md" style={{ marginBottom: '1rem' }}>1. Is it an invasive device?</h3>
             <p className="text-small" style={{ marginBottom: '1.5rem' }}>Penetrates inside the body, either through a body orifice or through the surface of the body.</p>
             <div style={{ display: 'flex', gap: '1rem' }}>
-              <button 
+              <button
                 className={`btn ${invasive === true ? 'btn-primary' : 'btn-secondary'}`}
                 onClick={() => setInvasive(true)}
               >
                 Yes, it is invasive
               </button>
-              <button 
+              <button
                 className={`btn ${invasive === false ? 'btn-primary' : 'btn-secondary'}`}
                 onClick={() => setInvasive(false)}
               >
@@ -69,13 +105,13 @@ export default function Step2() {
             <h3 className="heading-md" style={{ marginBottom: '1rem' }}>2. Is it an active device?</h3>
             <p className="text-small" style={{ marginBottom: '1.5rem' }}>Depends on a source of energy other than that generated by the human body or gravity (e.g. software, electronics).</p>
             <div style={{ display: 'flex', gap: '1rem' }}>
-              <button 
+              <button
                 className={`btn ${active === true ? 'btn-primary' : 'btn-secondary'}`}
                 onClick={() => setActive(true)}
               >
                 Yes, it is active
               </button>
-              <button 
+              <button
                 className={`btn ${active === false ? 'btn-primary' : 'btn-secondary'}`}
                 onClick={() => setActive(false)}
               >
@@ -83,13 +119,13 @@ export default function Step2() {
               </button>
             </div>
           </div>
-          
+
           {/* Question 3 */}
           <div className="glass-card" style={{ gridColumn: '1 / -1' }}>
             <h3 className="heading-md" style={{ marginBottom: '1rem' }}>3. Duration of Use</h3>
             <div style={{ display: 'flex', gap: '1rem' }}>
-              {['transient', 'short-term', 'long-term'].map(val => (
-                <button 
+              {(['transient', 'short-term', 'long-term'] as Duration[]).map(val => (
+                <button
                   key={val}
                   className={`btn ${duration === val ? 'btn-primary' : 'btn-secondary'}`}
                   onClick={() => setDuration(val)}
@@ -108,7 +144,7 @@ export default function Step2() {
         </div>
 
         {riskResult && (
-          <div className="result-card glass-card animate-fade-in" style={{ 
+          <div className="result-card glass-card animate-fade-in" style={{
             background: 'var(--bg-surface-elevated)',
             borderColor: riskResult.color,
             boxShadow: `0 0 20px ${riskResult.color}20`,
@@ -133,10 +169,10 @@ export default function Step2() {
           <span className="text-small text-muted">
             Note: This is a simplified calculator. Refer to MDR Annex VIII for full rules.
           </span>
-          <button 
-            className="btn btn-primary" 
+          <button
+            className="btn btn-primary"
             disabled={!riskResult}
-            onClick={() => navigate('/step-3')}
+            onClick={handleContinue}
           >
             Continue to QMS <ArrowRight size={16} />
           </button>

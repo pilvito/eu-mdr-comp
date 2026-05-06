@@ -1,11 +1,15 @@
 import React from 'react';
 import { ListChecks } from 'lucide-react';
 import ChecklistStep from '../components/ChecklistStep';
+import StepPrerequisiteWarning from '../components/StepPrerequisiteWarning';
 
 export default function SaMDPlanning() {
   return (
-    <ChecklistStep 
+    <>
+      <StepPrerequisiteWarning stepId="samd" />
+      <ChecklistStep
       stepNumber={"IEC 62304"}
+      stepId="samd"
       title="Software Development Planning"
       description="Breakdown of development planning per IEC 62304. This step-by-step process builds essential traceability for your Software as a Medical Device (SaMD)."
       icon={ListChecks}
@@ -25,5 +29,6 @@ export default function SaMDPlanning() {
         { id: '11', title: '11. SW Maintenance Plan', description: 'Create a systemic issue handling feedback loop. Define how post-release bugs are tracked, root causes are investigated, and hotfixes deployed.' }
       ]}
     />
+    </>
   );
 }

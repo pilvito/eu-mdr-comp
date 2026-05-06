@@ -3,7 +3,14 @@
     "allow": [
       "Bash(npm test *)",
       "Bash(npx vitest *)",
-      "Bash(npm install *)"
+      "Bash(npm install *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\vijic\\\\.gemini\\\\antigravity\\\\scratch\\\\eumdr-app-enhanced\" -Recurse -Directory)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(npx tsc *)",
+      "Bash(node -e \"const l = require\\('./node_modules/lucide-react'\\); console.log\\('AlertCircle:', !!l.AlertCircle, 'PlusCircle:', !!l.PlusCircle, 'Github:', !!l.Github, 'Circle:', !!l.Circle, 'CheckCircle2:', !!l.CheckCircle2, 'Upload:', !!l.Upload, 'AlignLeft:', !!l.AlignLeft\\)\")",
+      "Bash(npx vite *)",
+      "Bash(node -e \"const l = require\\('./node_modules/lucide-react'\\); const keys = Object.keys\\(l\\).filter\\(k => k.toLowerCase\\(\\).includes\\('git'\\) || k.toLowerCase\\(\\).includes\\('code'\\) || k.toLowerCase\\(\\).includes\\('link'\\)\\); console.log\\(keys.slice\\(0,20\\).join\\(', '\\)\\)\")",
+      "Bash(node -e \"const l = require\\('./node_modules/lucide-react'\\); ['Link', 'Link2', 'GitBranch', 'GitCommit', 'Globe2', 'Code2', 'Terminal', 'Folder', 'FolderCode', 'Database'].forEach\\(k => console.log\\(k+':', !!l[k]\\)\\)\")"
     ]
   }
 }

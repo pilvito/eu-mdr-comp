@@ -3,16 +3,19 @@ import { describe, it, expect } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import Step2 from '../../src/pages/Step2'
+import { ProductProvider } from '../../src/context/ProductContext'
 
 function renderStep2() {
   return render(
-    <MemoryRouter initialEntries={['/step-2']}>
-      <Routes>
-        <Route path="/step-2" element={<Step2 />} />
-        <Route path="/step-1" element={<div>Step 1 Page</div>} />
-        <Route path="/step-3" element={<div>Step 3 Page</div>} />
-      </Routes>
-    </MemoryRouter>
+    <ProductProvider>
+      <MemoryRouter initialEntries={['/step-2']}>
+        <Routes>
+          <Route path="/step-2" element={<Step2 />} />
+          <Route path="/step-1" element={<div>Step 1 Page</div>} />
+          <Route path="/step-3" element={<div>Step 3 Page</div>} />
+        </Routes>
+      </MemoryRouter>
+    </ProductProvider>
   )
 }
 

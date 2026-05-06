@@ -9,6 +9,7 @@ import SoftwareArchitecture from './pages/SoftwareArchitecture';
 import { Step3, Step4, Step5, Step6, Step7, Step8, Step9 } from './pages/Steps';
 import { ProductProvider } from './context/ProductContext';
 import ProductSetup from './pages/ProductSetup';
+import OnboardingWizard from './pages/OnboardingWizard';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Routes>
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Dashboard />} />
+          <Route path="onboarding" element={<OnboardingWizard />} />
           <Route path="product-setup" element={<ProductSetup />} />
           <Route path="step-1" element={<Step1 />} />
           <Route path="step-2" element={<Step2 />} />
